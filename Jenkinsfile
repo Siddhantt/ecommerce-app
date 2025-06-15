@@ -1,10 +1,14 @@
-pipeline {
+ppipeline {
     agent any
+
+    environment {
+        GIT_USERNAME = 'Siddhantt'
+    }
 
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/Siddhantt/ecommerce-app.git', credentialsId: 'Githubtoken'
+                git credentialsId: 'Githubtoken', url: 'https://github.com/Siddhantt/ecommerce-app.git'
             }
         }
 
@@ -26,21 +30,22 @@ pipeline {
 
         stage('Test App Health') {
             steps {
-                sh 'docker run -d -p 5000:5000 --name test-app ecommerce-app:latest'
-                sh 'sleep 5'
-                sh 'curl --fail http://localhost:5000/health'
-                sh 'docker stop test-app && docker rm test-app'
+                sh '''
+                    docker rm -f test-app || true
+                    docker run -d -p 5001:5000 --name test-app ecommerce-app:latest
+                    sleep 5
+                    curl -f http://localhost:5001/health
+                '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Build and Test Success!'
-        }
         failure {
             echo '❌ Build or Test Failed.'
         }
+        success {
+            echo '✅ Pipeline completed successfully.'
+        }
     }
 }
-
