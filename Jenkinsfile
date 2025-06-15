@@ -29,13 +29,14 @@ pipeline {
         }
 
         stage('Test App Health') {
-            steps {
-                sh '''
-                    docker rm -f test-app || true
-                    docker run -d -p 5001:5000 --name test-app ecommerce-app:latest
-                    sleep 5
-                    curl -f http://localhost:5001/health
-                '''
+    steps {
+        sh '''
+            docker rm -f test-app || true
+            docker run -d -p 5001:5000 --name test-app ecommerce-app:latest
+            sleep 5
+            APP_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-app)
+            curl -f http://$APP_IP:5000/health
+        '''
             }
         }
     }
