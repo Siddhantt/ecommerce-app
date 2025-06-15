@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git credentialsId: 'Githubtoken', url: 'https://github.com/Siddhantt/ecommerce-app.git'
+                git branch: 'main', credentialsId: 'Githubtoken', url: 'https://github.com/Siddhantt/ecommerce-app.git'
             }
         }
 
@@ -49,3 +49,4 @@ pipeline {
         }
     }
 }
+
